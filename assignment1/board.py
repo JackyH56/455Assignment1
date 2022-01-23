@@ -82,8 +82,8 @@ class GoBoard(object):
         This prevents the board from being modified by the move
         """
         board_copy = self.copy()
-        can_play_move = board_copy.play_move(point, color)
-        return can_play_move
+        can_play_move, reason = board_copy.play_move(point, color)
+        return can_play_move, reason
 
     def get_empty_points(self):
         """
@@ -194,27 +194,25 @@ class GoBoard(object):
         assert is_black_white(color)
         # Special cases
         if point == PASS:
-            return False
-        elif self.board[point] != EMPTY:
-            return False
-        if point == self.ko_recapture:
-            return False
+            return False, ""
 
-        # General case: deal with captures, suicide, and next ko point
-        opp_color = GoBoardUtil.opponent(color)
-        in_enemy_eye = self._is_surrounded(point, opp_color)
+        elif self.board[point] != EMPTY:
+            return False, "occupied"
+
+        opp_color = GoBoardUtil.opponent(color) #capture
         self.board[point] = color
-        single_captures = []
         neighbors = self._neighbors(point)
         for nb in neighbors:
             if self.board[nb] == opp_color:
                 if self._detect_capture(nb):
-                    return False
+                    self.board[point] = EMPTY
+                    return False, "capture"
         block = self._block_of(point)
-        if not self._has_liberty(block):  # undo suicide move
+
+        if not self._has_liberty(block):  # suicide
             self.board[point] = EMPTY
-            return False
-        return True
+            return False, "suicide"
+        return True, ""
 
     def neighbors_of_color(self, point, color):
         """ List of neighbors of point of given color """
@@ -236,7 +234,6 @@ class GoBoard(object):
             point + self.NS - 1,
             point + self.NS + 1,
         ]
-
     def last_board_moves(self):
         """
         Get the list of last_move and second last move.
