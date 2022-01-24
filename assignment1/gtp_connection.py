@@ -263,17 +263,23 @@ class GtpConnection:
     Assignment 1 - game-specific commands you have to implement or modify
     ==========================================================================
     """
-    def gogui_rules_final_result_cmd(self, args):
-        """ Implement this function for Assignment 1 """
+    def get_legal_moves(self):
         legal_moves = []
         points = self.board.get_empty_points()
         for point in points:
             legal, reason = self.board.is_legal(point, self.board.current_player)
             if legal:
                 legal_moves.append(point)
+        return legal_moves
+
+    def gogui_rules_final_result_cmd(self, args):
+        """ Implement this function for Assignment 1 """
+        legal_moves = self.get_legal_moves()
 
         if (len(legal_moves) == 0):
-            winner = "white" if self.board.current_player == 1 else "white"
+            winner = "white"
+            if self.board.current_player == 2:
+                winner = "black"
             self.respond(winner)
         else:
             self.respond("unknown")
@@ -282,18 +288,15 @@ class GtpConnection:
         """ 
         Implement this function for Assignment 1
         """
-        legal_moves = []
-        points = self.board.get_empty_points()
-        for point in points:
-            legal, reason = self.board.is_legal(point, self.board.current_player)
-            if legal:
-                legal_moves.append(point)
+        legal_moves = self.get_legal_moves()
+
         gtp_moves = []
         for move in legal_moves:
             coords = point_to_coord(move, self.board.size)
             gtp_moves.append(format_point(coords))
         sorted_moves = " ".join(sorted(gtp_moves))
         self.respond(sorted_moves)
+        return sorted_moves
 
     def play_cmd(self, args):
         """
@@ -314,7 +317,7 @@ class GtpConnection:
                 move = coord_to_point(coord[0], coord[1], self.board.size)
             else:
                 self.error(
-                    "Error executing move {} converted from {}".format(move, args[1])
+                    "Error executing move {} converted from {}".format(board_move, args[1])
                 )
                 return
             #make copy of board to check if legal move
@@ -341,20 +344,16 @@ class GtpConnection:
 
     def genmove_cmd(self, args):
         """ generate a move for color args[0] in {'b','w'} """
-        board_color = args[0].lower()
-        color = color_to_int(board_color)
-        move = self.go_engine.get_move(self.board, color)
-        if move == PASS:
+        legal_moves = self.get_legal_moves()
+
+        if len(legal_moves) == 0:
             self.respond("resign")
             return
-        move_coord = point_to_coord(move, self.board.size)     
+
+        move = np.random.choice(legal_moves)
+        move_coord = point_to_coord(move, self.board.size)
         move_as_string = format_point(move_coord)
-        legal, reason = self.board.is_legal(move, color)
-        if legal:
-            self.board.play_move(move, color)
-            self.respond(move_as_string)
-        else:
-            self.respond("illegal move: {}".format(move_as_string))
+        self.respond(move_as_string)
 
 
     """

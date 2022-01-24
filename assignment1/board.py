@@ -181,10 +181,7 @@ class GoBoard(object):
         Returns boolean: whether block would be captured
         """
         opp_block = self._block_of(nb_point)
-        if self._has_liberty(opp_block):
-            return False
-        else:
-            return True
+        return not self._has_liberty(opp_block)
 
     def play_move(self, point, color):
         """
@@ -213,6 +210,9 @@ class GoBoard(object):
         if not self._has_liberty(block):  # suicide
             self.board[point] = EMPTY
             return False, "suicide"
+        self.current_player = GoBoardUtil.opponent(color)
+        self.last2_move = self.last_move
+        self.last_move = point
         return True, ""
 
     def neighbors_of_color(self, point, color):
