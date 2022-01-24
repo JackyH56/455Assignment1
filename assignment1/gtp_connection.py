@@ -268,7 +268,8 @@ class GtpConnection:
         legal_moves = []
         points = self.board.get_empty_points()
         for point in points:
-            if self.board.is_legal(point, self.board.current_player):
+            legal, reason = self.board.is_legal(point, self.board.current_player)
+            if legal:
                 legal_moves.append(point)
 
         if (len(legal_moves) == 0):
@@ -280,18 +281,17 @@ class GtpConnection:
     def gogui_rules_legal_moves_cmd(self, args):
         """ 
         Implement this function for Assignment 1
-        List legal moves for color args[0] in {'b','w'}
         """
         legal_moves = []
         points = self.board.get_empty_points()
         for point in points:
-            if self.board.is_legal(point, self.board.current_player):
+            legal, reason = self.board.is_legal(point, self.board.current_player)
+            if legal:
                 legal_moves.append(point)
         gtp_moves = []
         for move in legal_moves:
-            if self.board.is_legal(move, self.board.current_player):
-                coords = point_to_coord(move, self.board.size)
-                gtp_moves.append(format_point(coords))
+            coords = point_to_coord(move, self.board.size)
+            gtp_moves.append(format_point(coords))
         sorted_moves = " ".join(sorted(gtp_moves))
         self.respond(sorted_moves)
 
@@ -349,7 +349,8 @@ class GtpConnection:
             return
         move_coord = point_to_coord(move, self.board.size)     
         move_as_string = format_point(move_coord)
-        if self.board.is_legal(move, color):
+        legal, reason = self.board.is_legal(move, color)
+        if legal:
             self.board.play_move(move, color)
             self.respond(move_as_string)
         else:

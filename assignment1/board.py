@@ -190,6 +190,7 @@ class GoBoard(object):
         """
         Play a move of color on point
         Returns boolean: whether move was legal
+        Returns string: reason why move was illegal
         """
         assert is_black_white(color)
         # Special cases
