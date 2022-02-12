@@ -37,6 +37,7 @@ class GtpConnection:
         self._debug_mode = debug_mode
         self.go_engine = go_engine
         self.board = board
+        self.timelimit = 1
         self.commands = {
             "protocol_version": self.protocol_version_cmd,
             "quit": self.quit_cmd,
@@ -52,7 +53,8 @@ class GtpConnection:
             "play": self.play_cmd,
             "gogui-rules_legal_moves":self.gogui_rules_legal_moves_cmd,
             "gogui-rules_final_result":self.gogui_rules_final_result_cmd,
-            "solve":self.solve_cmd
+            "solve":self.solve_cmd,
+            "timelimit":self.timelimit_cmd,
         }
 
         # used for argument checking
@@ -65,6 +67,7 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
+            "timelimit":(1, 'Usage: timelimit INT'),
         }
 
     def write(self, data):
@@ -333,6 +336,11 @@ class GtpConnection:
     def solve_cmd(self, args):
         # remove this respond and implement this method
         self.respond('Implement This for Assignment 2')
+    
+    def timelimit_cmd(self, args):
+        """ set a time limit for seconds args[0]"""
+        self.timelimit = int(args[0])
+        self.respond()
     """
     ==========================================================================
     Assignment 2 - game-specific commands end here
