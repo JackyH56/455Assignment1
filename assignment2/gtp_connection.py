@@ -331,8 +331,41 @@ class GtpConnection:
             self.respond("Illegal move: {}".format(move_as_string))
 
     def solve_cmd(self, args):
-        # remove this respond and implement this method
-        self.respond('Implement This for Assignment 2')
+        solved, move = self.boolean_negamax([self.board.copy()])
+        if solved:
+            self.respond(move)
+
+    def boolean_negamax(self, args):
+        board = args[0]
+        legal_moves = GoBoardUtil.generate_legal_moves(board, board.current_player)
+        opp_legal_moves = GoBoardUtil.generate_legal_moves(board, GoBoardUtil.opponent(board.current_player))
+        if len(legal_moves) == 0:
+            return False
+        elif len(opp_legal_moves) == 0:
+            return True
+        for move in legal_moves:
+            last_move = board.last_move
+            last2_move = board.last2_move
+
+            can_play_move = board.play_move(move, board.current_player)
+            if not can_play_move:
+                continue
+
+            success = not self.boolean_negamax([board])
+
+            board.set_point(move, EMPTY)
+            board.last_move = last_move
+            board.last2_move = last2_move
+            board.current_player = GoBoardUtil.opponent(board.current_player)
+
+            if success:
+                move_coord = point_to_coord(move, board.size)
+                move_as_string = format_point(move_coord)
+                if board.current_player == 1:
+                    return True, f"b {move_as_string.lower()}"
+                elif board.current_player == 2:
+                    return True, f"w {move_as_string.lower()}"
+        return False
     """
     ==========================================================================
     Assignment 2 - game-specific commands end here
