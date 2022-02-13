@@ -52,6 +52,12 @@ class GtpConnection:
             "genmove": self.genmove_cmd,
             "list_commands": self.list_commands_cmd,
             "play": self.play_cmd,
+            "analyze": self.gogui_analyze_cmd,
+            "rules_game_id": self.gogui_rules_game_id_cmd,
+            "gogui_rules_board_size_cmd": self.gogui_rules_board_size_cmd,
+            "gogui_rules_side_to_move_cmd": self.gogui_rules_side_to_move_cmd,
+            "gogui_rules_board_cmd": self.gogui_rules_board_cmd,
+            "gogui_rules_legal_moves_cmd":self.gogui_rules_legal_moves_cmd,
             "gogui-rules_legal_moves":self.gogui_rules_legal_moves_cmd,
             "gogui-rules_final_result":self.gogui_rules_final_result_cmd,
             "solve":self.solve_cmd,
@@ -68,7 +74,7 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
-            "timelimit":(1, 'Usage: timelimit INT'),
+            "timelimit":(1, "Usage: timelimit INT"),
         }
 
     def write(self, data):
@@ -328,9 +334,9 @@ class GtpConnection:
             return
         # if there is a move to play, try to use solver
         else:
-            # response contains winner and move or unknown if time ran out
-            response = self.solve_cmd()
-            if response[0] == "b" or response[0] == "w":
+            # if response contains winner and move use that move otherwise will use random move
+            response = self.solve_cmd("")
+            if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
                 move = response[1]
             # use random move if response was unknown
             move_coord = point_to_coord(move, self.board.size)
@@ -350,14 +356,18 @@ class GtpConnection:
         timeUsed = time.process_time() - start
         if timeUsed > self.timelimit:
             self.respond("unknown")
-            return
+            return "unknown", ""
 
         if solvedForToPlay:
             assert(len(winning_moves) > 0)
-            self.respond(int_to_color[self.board.current_player] + " " + winning_moves.pop())
-            return
+            move = winning_moves.pop()
+            color = int_to_color[self.board.current_player]
+            self.respond(color + " " + move)
+            return str(color), move
 
-        self.respond(int_to_color[GoBoardUtil.opponent(self.board.current_player)])
+        opponent_color = int_to_color[GoBoardUtil.opponent(self.board.current_player)]
+        self.respond(opponent_color)
+        return str(opponent_color), ""
 
     def boolean_negamax(self, args):
         board = args[0]
