@@ -52,6 +52,12 @@ class GtpConnection:
             "genmove": self.genmove_cmd,
             "list_commands": self.list_commands_cmd,
             "play": self.play_cmd,
+            "analyze": self.gogui_analyze_cmd,
+            "rules_game_id": self.gogui_rules_game_id_cmd,
+            "gogui_rules_board_size_cmd": self.gogui_rules_board_size_cmd,
+            "gogui_rules_side_to_move_cmd": self.gogui_rules_side_to_move_cmd,
+            "gogui_rules_board_cmd": self.gogui_rules_board_cmd,
+            "gogui_rules_legal_moves_cmd":self.gogui_rules_legal_moves_cmd,
             "gogui-rules_legal_moves":self.gogui_rules_legal_moves_cmd,
             "gogui-rules_final_result":self.gogui_rules_final_result_cmd,
             "solve":self.solve_cmd,
@@ -68,7 +74,7 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
-            "timelimit":(1, 'Usage: timelimit INT'),
+            "timelimit":(1, "Usage: timelimit INT"),
         }
 
     def write(self, data):
@@ -324,15 +330,22 @@ class GtpConnection:
         color = color_to_int(board_color)
         move = self.go_engine.get_move(self.board, color)
         if move is None:
-            self.respond('unknown')
+            self.respond('resign')
             return
-        move_coord = point_to_coord(move, self.board.size)
-        move_as_string = format_point(move_coord)
-        if self.board.is_legal(move, color):
-            self.board.play_move(move, color)
-            self.respond(move_as_string)
+        # if there is a move to play, try to use solver
         else:
-            self.respond("Illegal move: {}".format(move_as_string))
+            # if response contains winner and move use that move otherwise will use random move
+            response = self.solve_cmd("")
+            if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
+                move = response[1]
+            # use random move if response was unknown or toPlay is losing
+            move_coord = point_to_coord(move, self.board.size)
+            move_as_string = format_point(move_coord)
+            if self.board.is_legal(move, color):
+                self.board.play_move(move, color)
+                self.respond(move_as_string)
+            else:
+                self.respond("Illegal move: {}".format(move_as_string))
 
     def solve_cmd(self, args):
         int_to_color = [None, "b", "w"]
@@ -343,14 +356,18 @@ class GtpConnection:
         timeUsed = time.process_time() - start
         if timeUsed > self.timelimit:
             self.respond("unknown")
-            return
+            return "unknown", ""
 
         if solvedForToPlay:
             assert(len(winning_moves) > 0)
-            self.respond(int_to_color[self.board.current_player] + " " + winning_moves.pop())
-            return
+            move = winning_moves.pop()
+            color = int_to_color[self.board.current_player]
+            self.respond(color + " " + move)
+            return str(color), move
 
-        self.respond(int_to_color[GoBoardUtil.opponent(self.board.current_player)])
+        opponent_color = int_to_color[GoBoardUtil.opponent(self.board.current_player)]
+        self.respond(opponent_color)
+        return str(opponent_color), ""
 
     def boolean_negamax(self, args):
         board = args[0]
