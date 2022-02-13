@@ -256,3 +256,9 @@ class GoBoard(object):
     def set_point(self, point, value):
         self.board[point] = value
         return
+
+    def hash_code(self):
+        c = 0
+        for i in range(len(self.board)):
+            c = (int(np.sqrt(len(self.board)))) * c + self.board[i]
+        return c

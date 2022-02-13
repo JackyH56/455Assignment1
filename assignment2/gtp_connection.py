@@ -20,6 +20,7 @@ from board_util import (
 )
 import numpy as np
 import time
+from transposition_table import TranspositionTable
 import re
 
 
@@ -337,10 +338,13 @@ class GtpConnection:
     def solve_cmd(self, args):
         int_to_color = [None, "b", "w"]
         winning_moves = []
+        tt = TranspositionTable()
 
         start = time.process_time()
-        solvedForToPlay = self.boolean_negamax([self.board.copy(), winning_moves])
+        solvedForToPlay = self.boolean_negamax_tt([self.board.copy(), winning_moves, tt])
         timeUsed = time.process_time() - start
+
+        tt.clear()
         if timeUsed > self.timelimit:
             self.respond("unknown")
             return
@@ -352,38 +356,51 @@ class GtpConnection:
 
         self.respond(int_to_color[GoBoardUtil.opponent(self.board.current_player)])
 
-    def boolean_negamax(self, args):
+    def storeResult(self, tt, board, result):
+        tt.store(board.hash_code(), result)
+        return result
+
+    def boolean_negamax_tt(self, args):
         board = args[0]
         winning_moves = args[1]
+        tt = args[2]
 
+        result = tt.lookup(board.hash_code())
+        if result != None:
+            return result
+
+        # End of NoGo game
         legal_moves = GoBoardUtil.generate_legal_moves(board, board.current_player)
         opp_legal_moves = GoBoardUtil.generate_legal_moves(board, GoBoardUtil.opponent(board.current_player))
         if len(legal_moves) == 0:
-            return False
+            return self.storeResult(tt, board, False)
         elif len(opp_legal_moves) == 0:
-            return True
+            return self.storeResult(tt, board, True)
 
         for move in legal_moves:
             last_move = board.last_move
             last2_move = board.last2_move
+            current_player = board.current_player
 
+            # make sure the move is legal
             can_play_move = board.play_move(move, board.current_player)
             if not can_play_move:
                 continue
 
-            success = not self.boolean_negamax([board, winning_moves])
+            success = not self.boolean_negamax_tt([board, winning_moves, tt])
 
+            # undo move
             board.set_point(move, EMPTY)
             board.last_move = last_move
             board.last2_move = last2_move
-            board.current_player = GoBoardUtil.opponent(board.current_player)
+            board.current_player = current_player
 
             if success:
-                move_coord = point_to_coord(move, self.board.size)
+                move_coord = point_to_coord(move, board.size)
                 move_as_string = format_point(move_coord)
                 winning_moves.append(move_as_string.lower())
-                return True
-        return False
+                return self.storeResult(tt, board, True)
+        return self.storeResult(tt, board, False)
         
     def timelimit_cmd(self, args):
         """ set a time limit for seconds args[0]"""
