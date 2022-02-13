@@ -19,6 +19,7 @@ from board_util import (
     coord_to_point,
 )
 import numpy as np
+import time
 import re
 
 
@@ -341,9 +342,56 @@ class GtpConnection:
                 self.respond("Illegal move: {}".format(move_as_string))
 
     def solve_cmd(self, args):
-        # remove this respond and implement this method
-        self.respond('Implement This for Assignment 2')
-    
+        int_to_color = [None, "b", "w"]
+        winning_moves = []
+
+        start = time.process_time()
+        solvedForToPlay = self.boolean_negamax([self.board.copy(), winning_moves])
+        timeUsed = time.process_time() - start
+        if timeUsed > self.timelimit:
+            self.respond("unknown")
+            return
+
+        if solvedForToPlay:
+            assert(len(winning_moves) > 0)
+            self.respond(int_to_color[self.board.current_player] + " " + winning_moves.pop())
+            return
+
+        self.respond(int_to_color[GoBoardUtil.opponent(self.board.current_player)])
+
+    def boolean_negamax(self, args):
+        board = args[0]
+        winning_moves = args[1]
+
+        legal_moves = GoBoardUtil.generate_legal_moves(board, board.current_player)
+        opp_legal_moves = GoBoardUtil.generate_legal_moves(board, GoBoardUtil.opponent(board.current_player))
+        if len(legal_moves) == 0:
+            return False
+        elif len(opp_legal_moves) == 0:
+            return True
+
+        for move in legal_moves:
+            last_move = board.last_move
+            last2_move = board.last2_move
+
+            can_play_move = board.play_move(move, board.current_player)
+            if not can_play_move:
+                continue
+
+            success = not self.boolean_negamax([board, winning_moves])
+
+            board.set_point(move, EMPTY)
+            board.last_move = last_move
+            board.last2_move = last2_move
+            board.current_player = GoBoardUtil.opponent(board.current_player)
+
+            if success:
+                move_coord = point_to_coord(move, self.board.size)
+                move_as_string = format_point(move_coord)
+                winning_moves.append(move_as_string.lower())
+                return True
+        return False
+        
     def timelimit_cmd(self, args):
         """ set a time limit for seconds args[0]"""
         self.timelimit = int(args[0])
