@@ -19,6 +19,7 @@ from board_util import (
     coord_to_point,
 )
 import numpy as np
+import time
 import re
 
 
@@ -334,18 +335,34 @@ class GtpConnection:
             self.respond("Illegal move: {}".format(move_as_string))
 
     def solve_cmd(self, args):
-        solved, move = self.boolean_negamax([self.board.copy()])
-        if solved:
-            self.respond(move)
+        int_to_color = [None, "b", "w"]
+        winning_moves = []
+
+        start = time.process_time()
+        solvedForToPlay = self.boolean_negamax([self.board.copy(), winning_moves])
+        timeUsed = time.process_time() - start
+        if timeUsed > self.timelimit:
+            self.respond("unknown")
+            return
+
+        if solvedForToPlay:
+            assert(len(winning_moves) > 0)
+            self.respond(int_to_color[self.board.current_player] + " " + winning_moves.pop())
+            return
+
+        self.respond(int_to_color[GoBoardUtil.opponent(self.board.current_player)])
 
     def boolean_negamax(self, args):
         board = args[0]
+        winning_moves = args[1]
+
         legal_moves = GoBoardUtil.generate_legal_moves(board, board.current_player)
         opp_legal_moves = GoBoardUtil.generate_legal_moves(board, GoBoardUtil.opponent(board.current_player))
         if len(legal_moves) == 0:
             return False
         elif len(opp_legal_moves) == 0:
             return True
+
         for move in legal_moves:
             last_move = board.last_move
             last2_move = board.last2_move
@@ -354,7 +371,7 @@ class GtpConnection:
             if not can_play_move:
                 continue
 
-            success = not self.boolean_negamax([board])
+            success = not self.boolean_negamax([board, winning_moves])
 
             board.set_point(move, EMPTY)
             board.last_move = last_move
@@ -362,12 +379,10 @@ class GtpConnection:
             board.current_player = GoBoardUtil.opponent(board.current_player)
 
             if success:
-                move_coord = point_to_coord(move, board.size)
+                move_coord = point_to_coord(move, self.board.size)
                 move_as_string = format_point(move_coord)
-                if board.current_player == 1:
-                    return True, f"b {move_as_string.lower()}"
-                elif board.current_player == 2:
-                    return True, f"w {move_as_string.lower()}"
+                winning_moves.append(move_as_string.lower())
+                return True
         return False
         
     def timelimit_cmd(self, args):
