@@ -285,13 +285,14 @@ class GtpConnection:
     def gogui_rules_final_result_cmd(self, args):
         # implement this method correctly
         legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
-        if len(legal_moves) > 0:
-            self.respond('unknown')
+
+        if (len(legal_moves) == 0):
+            winner = "white"
+            if self.board.current_player == WHITE:
+                winner = "black"
+            self.respond(winner)
         else:
-            if self.board.current_player == BLACK:
-                self.respond('')
-            else:
-                self.respond('')
+            self.respond("unknown")
 
     def play_cmd(self, args):
         """
@@ -340,11 +341,8 @@ class GtpConnection:
             response = self.solve_cmd("genmove")
             if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
                 move = response[1].upper()
-                if self.board.is_legal(move, color):
-                    self.board.play_move(move, color)
-                    self.respond(move_as_string)
-                else:
-                    self.respond("resign")
+                self.board.play_move(move, color)
+                self.respond(move)
             else:
                 # use random move if response was unknown or toPlay is losing
                 move_coord = point_to_coord(move, self.board.size)
