@@ -339,7 +339,7 @@ class GtpConnection:
             # if response contains winner and move, use that move
             response = self.solve_cmd("")
             if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
-                move = response[1]
+                move = response[1].upper()
                 if self.board.is_legal(move, color):
                     self.board.play_move(move, color)
                     self.respond(move_as_string)
