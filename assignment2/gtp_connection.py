@@ -336,17 +336,15 @@ class GtpConnection:
             return
         # if there is a move to play, try to use solver
         else:
-            # if response contains winner and move use that move otherwise will use random move
+            # if response contains winner and move, use that move
             response = self.solve_cmd("")
             if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
                 move = response[1]
-                move_coord = point_to_coord(move, self.board.size)
-                move_as_string = format_point(move_coord)
                 if self.board.is_legal(move, color):
                     self.board.play_move(move, color)
                     self.respond(move_as_string)
                 else:
-                    self.respond("Illegal move: {}".format(move_as_string))
+                    self.respond("resign")
             else:
                 # use random move if response was unknown or toPlay is losing
                 move_coord = point_to_coord(move, self.board.size)
