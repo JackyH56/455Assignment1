@@ -337,21 +337,20 @@ class GtpConnection:
         # if there is a move to play, try to use solver
         else:
             # if response contains winner and move, use that move
-            response = self.solve_cmd("genmove")
-            if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
-                move = response[1].upper()
-                if self.board.is_legal(move, color):
-                    self.board.play_move(move, color)
-                    self.respond(move_as_string)
-                else:
-                    self.respond("resign")
+            response = self.solve_cmd(["genmove"])
+            if response is not None:
+                move = response.lower() 
+                move_coord = move_to_coord(move, self.board.size)
+                move_as_point = self.board.NS * move_coord[0] + move_coord[1]
+                self.board.play_move(move_as_point, color)
+                self.respond(move)
             else:
                 # use random move if response was unknown or toPlay is losing
-                move_coord = point_to_coord(move, self.board.size)
-                move_as_string = format_point(move_coord)
-                if self.board.is_legal(move, color):
-                    self.board.play_move(move, color)
-                    self.respond(move_as_string)
+                move_coord = move_to_coord(move, self.board.size)
+                move_as_point = self.board.NS * move_coord[0] + move_coord[1]
+                if self.board.is_legal(move_as_point, color):
+                    self.board.play_move(move_as_point, color)
+                    self.respond(move)
                 else:
                     self.respond("resign")
 
@@ -370,22 +369,22 @@ class GtpConnection:
         try:
             solvedForToPlay = self.boolean_negamax_tt([self.board.copy(), winning_moves, tt])
         except Exception:
-            if(args[0] != "genmove"):
+            if len(args) == 0 or (len(args) > 0 and args[0] != "genmove"):
                 self.respond("unknown")
-            return "unknown", ""
+            return
 
         if solvedForToPlay:
             assert(len(winning_moves) > 0)
             move = winning_moves.pop()
             color = int_to_color[self.board.current_player]
-            if(args[0] != "genmove"):
+            if len(args) == 0 or (len(args) > 0 and args[0] != "genmove"):
                 self.respond(color + " " + move)
-            return str(color), move
+            return move
 
         opponent_color = int_to_color[GoBoardUtil.opponent(self.board.current_player)]
-        if(args[0] != "genmove"):
+        if len(args) == 0 or (len(args) > 0 and args[0] != "genmove"):
             self.respond(opponent_color)
-        return str(opponent_color), ""
+        return
 
     def storeResult(self, tt, board, result):
         tt.store(board.hash_code(), result)
