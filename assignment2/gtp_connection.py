@@ -337,7 +337,7 @@ class GtpConnection:
         # if there is a move to play, try to use solver
         else:
             # if response contains winner and move, use that move
-            response = self.solve_cmd("")
+            response = self.solve_cmd("genmove")
             if (response[0] == "b" and response[1] != "") or (response[0] == "w" and response[1] != ""):
                 move = response[1].upper()
                 if self.board.is_legal(move, color):
@@ -370,18 +370,21 @@ class GtpConnection:
         try:
             solvedForToPlay = self.boolean_negamax_tt([self.board.copy(), winning_moves, tt])
         except Exception:
-            self.respond("unknown")
+            if(args[0] != "genmove"):
+                self.respond("unknown")
             return "unknown", ""
 
         if solvedForToPlay:
             assert(len(winning_moves) > 0)
             move = winning_moves.pop()
             color = int_to_color[self.board.current_player]
-            self.respond(color + " " + move)
+            if(args[0] != "genmove"):
+                self.respond(color + " " + move)
             return str(color), move
 
         opponent_color = int_to_color[GoBoardUtil.opponent(self.board.current_player)]
-        self.respond(opponent_color)
+        if(args[0] != "genmove"):
+            self.respond(opponent_color)
         return str(opponent_color), ""
 
     def storeResult(self, tt, board, result):
