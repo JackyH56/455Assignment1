@@ -20,6 +20,7 @@ from board_util import (
 )
 import numpy as np
 import time
+import signal
 from transposition_table import TranspositionTable
 import re
 
@@ -348,17 +349,21 @@ class GtpConnection:
             else:
                 self.respond("Illegal move: {}".format(move_as_string))
 
+    def signal_handler(self, signum, frame):
+        raise Exception("unknown")
+
     def solve_cmd(self, args):
         int_to_color = [None, "b", "w"]
         winning_moves = []
         tt = TranspositionTable()
-
-        start = time.process_time()
-        solvedForToPlay = self.boolean_negamax_tt([self.board.copy(), winning_moves, tt])
-        timeUsed = time.process_time() - start
-
         tt.clear()
-        if timeUsed > self.timelimit:
+        solvedForToPlay = None
+
+        signal.signal(signal.SIGALRM, self.signal_handler)
+        signal.alarm(self.timelimit)
+        try:
+            solvedForToPlay = self.boolean_negamax_tt([self.board.copy(), winning_moves, tt])
+        except Exception:
             self.respond("unknown")
             return "unknown", ""
 

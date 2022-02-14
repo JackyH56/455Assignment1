@@ -260,5 +260,5 @@ class GoBoard(object):
     def hash_code(self):
         c = 0
         for i in range(len(self.board)):
-            c = (int(np.sqrt(len(self.board)))) * c + self.board[i]
+            c = (len(self.board)) * c + self.board[i]
         return c
