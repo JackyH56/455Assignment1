@@ -52,7 +52,10 @@ class GtpConnection:
             "play": self.play_cmd,
             "gogui-rules_legal_moves":self.gogui_rules_legal_moves_cmd,
             "gogui-rules_final_result":self.gogui_rules_final_result_cmd,
-            "solve":self.solve_cmd
+            "solve":self.solve_cmd,
+            "policy":self.policy_cmd,
+            "selection":self.selection_cmd,
+            "policy_moves":self.policy_moves_cmd,
         }
 
         # used for argument checking
@@ -65,6 +68,8 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
+            "policytype": (1, "Usage: policytype {random,pattern}"),
+            "selectiontype": (1, "Usage: policytype {rr, ucb}"),
         }
 
     def write(self, data):
@@ -312,6 +317,17 @@ class GtpConnection:
     def solve_cmd(self, args):
         # remove this respond and implement this method
         self.respond('Implement This for Assignment 2')
+
+    def policy_cmd(self, args):
+        self.go_engine.sim_policy = args[0]
+        self.respond('')
+    
+    def selection_cmd(self, args):
+        self.go_engine.move_selection = args[0]
+        self.respond('')
+
+    def policy_moves_cmd(self, args):
+        self.respond('Blah')
 
 def point_to_coord(point, boardsize):
     """

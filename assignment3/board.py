@@ -89,6 +89,13 @@ class GoBoard(object):
             The empty points on the board
         """
         return where1d(self.board == EMPTY)
+    
+    def find_neighbor_of_color(self, point, color):
+        """ Return one neighbor of point of given color, or None """
+        for nb in self.neighbors[point]:
+            if self.get_color(nb) == color:
+                return nb
+        return None
 
     def row_start(self, row):
         assert row >= 1

@@ -3,7 +3,6 @@
 # Set the path to your python3 above
 
 from gtp_connection import GtpConnection
-from board_score import winner
 from board_util import GoBoardUtil, PASS
 from board import GoBoard
 from simulation_util import writeMoves, select_best_move
@@ -20,9 +19,10 @@ class Go3:
         self.name = "Go3"
         self.version = 1.0
         self.sim = 10
-        self.use_ucb = False if move_select == "rr" else True
-        self.random_simulation = True if sim_rule == "random" else False
-        self.use_pattern = not self.random_simulation
+        self.limit = 100
+        self.move_selection = move_select # move_select = "rr" or "ucb"
+        self.sim_policy = sim_rule # sim_policy = "random" or "patternbased"
+        self.use_pattern = True if self.sim_policy == "patternbased" else False
 
     def simulate(self, board, move, toplay):
         """
@@ -57,7 +57,7 @@ class Go3:
         if not moves:
             return None
         moves.append(None)
-        if self.use_ucb:
+        if self.move_selection == "ucb":
             C = 0.4  # sqrt(2) is safe, this is more aggressive
             best = runUcb(self, cboard, C, moves, color)
             return best
@@ -73,24 +73,22 @@ class Go3:
         """
         Run a simulation game.
         """
-        nuPasses = 0
+        winner = board.current_player
         for _ in range(self.limit):
             color = board.current_player
-            if self.random_simulation:
+            if self.sim_policy == "random":
                 move = GoBoardUtil.generate_random_move(board, color, False)
             else:
                 # TODO make pattern util file that generates pattern moves with weight.txt file
-                move = PatternUtil.generate_pattern_moves(
-                    board, self.use_pattern
-                )
+                pass
+                # move = PatternUtil.generate_pattern_moves(
+                #     board, self.use_pattern
+                # )
             board.play_move(move, color)
             if move == PASS:
-                nuPasses += 1
-            else:
-                nuPasses = 0
-            if nuPasses >= 2:
+                winner = GoBoardUtil.opponent(color)
                 break
-        return winner(board)
+        return winner
 
 def run(move_select, sim_rule):
     """
@@ -122,7 +120,6 @@ def parse_args():
     )
 
     args = parser.parse_args()
-    sim = args.sim
     move_select = args.moveselect
     sim_rule = args.simrule
     if move_select != "rr" and move_select != "ucb":
