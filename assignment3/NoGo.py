@@ -6,6 +6,7 @@ from gtp_connection import GtpConnection
 from board_util import GoBoardUtil, PASS
 from board import GoBoard
 from simulation_util import writeMoves, select_best_move
+from pattern_util import PatternUtil
 from ucb import runUcb
 import numpy as np
 import argparse
@@ -79,11 +80,9 @@ class Go3:
             if self.sim_policy == "random":
                 move = GoBoardUtil.generate_random_move(board, color, False)
             else:
-                # TODO make pattern util file that generates pattern moves with weight.txt file
-                pass
-                # move = PatternUtil.generate_pattern_moves(
-                #     board, self.use_pattern
-                # )
+                if self.use_pattern:
+                    distribution = PatternUtil.generate_pattern_moves(board, color)
+                    move = PatternUtil.random_select(distribution)
             board.play_move(move, color)
             if move == PASS:
                 winner = GoBoardUtil.opponent(color)
