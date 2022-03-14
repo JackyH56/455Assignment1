@@ -18,7 +18,7 @@ class PatternUtil(object):
         sum = 0.0
         for move in legal_moves:
             code = PatternUtil.get_pattern_code(move, board)
-            if weights[code]:
+            if weights[code] and weights[code] != 1.0:
                 distribution.append((code, weights[code]))
                 sum += weights[code]
         
