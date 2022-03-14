@@ -80,7 +80,7 @@ class Go3:
                 move = GoBoardUtil.generate_random_move(board, color, False)
             else:
                 distribution = PatternUtil.generate_pattern_moves(board, color)
-                move = PatternUtil.random_select(distribution)
+                move = PatternUtil.random_select(distribution)[0]
             board.play_move(move, color)
             if move == PASS:
                 winner = GoBoardUtil.opponent(color)

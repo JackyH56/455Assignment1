@@ -14,13 +14,14 @@ class PatternUtil(object):
     @staticmethod
     def generate_pattern_moves(board, color):
         legal_moves = GoBoardUtil.generate_legal_moves(board, color)
+        print(legal_moves)
         distribution = []
         sum = 0.0
         for move in legal_moves:
             code = PatternUtil.get_pattern_code(move, board)
             if weights[code] and weights[code] != 1.0:
-                distribution.append((code, weights[code]))
-                sum += weights[code]
+                distribution.append([code, weights[code][1]])
+                sum += weights[code][1]
         
         # adjust probabilities so they add up to 1, a proper distribution
         for pattern in distribution:
@@ -40,8 +41,9 @@ class PatternUtil(object):
 
     @staticmethod
     def get_pattern_code(move, board):
-        coord = move_to_coord(str(move), board.size)
-        point = coord_to_point(coord[0], coord[1], board.size)
+        point = move
+        # coord = move_to_coord(str(move), board.size)
+        # point = coord_to_point(coord[0], coord[1], board.size)
         adjacent = [
             point - board.NS - 1,
             point - board.NS,
@@ -54,6 +56,5 @@ class PatternUtil(object):
         
         code = 0
         for i in range(8):
-            code += board[adjacent[i]] * 4 ^ i
-
+            code += board.board[adjacent[i]] * 4 ^ i
         return code
