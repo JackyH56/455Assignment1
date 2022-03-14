@@ -29,7 +29,7 @@ class PatternUtil(object):
         return distribution
 
     @staticmethod
-    def random_select(self, distribution):
+    def random_select(distribution):
         r = random.random()
         sum = 0.0
         for item in distribution:
@@ -39,8 +39,8 @@ class PatternUtil(object):
         return distribution[-1]
 
     @staticmethod
-    def get_pattern_code(self, move, board):
-        coord = move_to_coord(move, board.size)
+    def get_pattern_code(move, board):
+        coord = move_to_coord(str(move), board.size)
         point = coord_to_point(coord[0], coord[1], board.size)
         adjacent = [
             point - board.NS - 1,

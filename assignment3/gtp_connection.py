@@ -310,7 +310,7 @@ class GtpConnection:
         move_as_string = format_point(move_coord)
         if self.board.is_legal(move, color):
             self.board.play_move(move, color)
-            self.respond(move_as_string)
+            self.respond(move_as_string.lower())
         else:
             self.respond("Illegal move: {}".format(move_as_string))
 
@@ -345,7 +345,7 @@ class GtpConnection:
             point_strs = ' '.join(point_strs)
             self.respond(point_strs)
         else:
-            pass
+            self.respond("pattern")
 
 def point_to_coord(point, boardsize):
     """

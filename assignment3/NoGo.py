@@ -23,7 +23,6 @@ class Go3:
         self.limit = 100
         self.move_selection = move_select # move_select = "rr" or "ucb"
         self.sim_policy = sim_rule # sim_policy = "random" or "patternbased"
-        self.use_pattern = True if self.sim_policy == "patternbased" else False
 
     def simulate(self, board, move, toplay):
         """
@@ -80,9 +79,8 @@ class Go3:
             if self.sim_policy == "random":
                 move = GoBoardUtil.generate_random_move(board, color, False)
             else:
-                if self.use_pattern:
-                    distribution = PatternUtil.generate_pattern_moves(board, color)
-                    move = PatternUtil.random_select(distribution)
+                distribution = PatternUtil.generate_pattern_moves(board, color)
+                move = PatternUtil.random_select(distribution)
             board.play_move(move, color)
             if move == PASS:
                 winner = GoBoardUtil.opponent(color)
