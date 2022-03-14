@@ -261,9 +261,9 @@ class GtpConnection:
             self.respond('unknown')
         else:
             if self.board.current_player == BLACK:
-                self.respond('')
+                self.respond('w')
             else:
-                self.respond('')
+                self.respond('b')
 
     def play_cmd(self, args):
         """

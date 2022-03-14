@@ -17,6 +17,7 @@ class PatternUtil(object):
         # distribution_item[1] - the board code
         # distribution_item[2] - the probability
         legal_moves = GoBoardUtil.generate_legal_moves(board, color)
+        print(legal_moves)
         distribution = []
         sum = 0.0
         for point in legal_moves:
