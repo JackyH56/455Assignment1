@@ -327,7 +327,25 @@ class GtpConnection:
         self.respond('')
 
     def policy_moves_cmd(self, args):
-        self.respond('Blah')
+        # get all the legal moves
+        legal_moves = GoBoardUtil.generate_legal_moves(self.board, self.board.current_player)
+        coords = [point_to_coord(move, self.board.size) for move in legal_moves]
+        # convert to point strings
+        point_strs  = [ chr(ord('a') + col - 1) + str(row) for row, col in coords]
+        point_strs.sort()
+        num_moves = len(point_strs)
+
+
+        # get probabilities
+        probabilities = ""
+        if self.go_engine.sim_policy == "random":
+            prob = str(round(1 / num_moves, 3))
+            for i in range(num_moves):
+                point_strs.append(prob)
+            point_strs = ' '.join(point_strs)
+            self.respond(point_strs)
+        else:
+            pass
 
 def point_to_coord(point, boardsize):
     """
