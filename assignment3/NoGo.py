@@ -49,14 +49,8 @@ class Go3:
         Run one-ply MC simulations to get a move to play.
         """
         cboard = board.copy()
-        emptyPoints = board.get_empty_points()
-        moves = []
-        for p in emptyPoints:
-            if board.is_legal(p, color):
-                moves.append(p)
-        if not moves:
-            return None
-        moves.append(None)
+        moves = GoBoardUtil.generate_legal_moves(board, color)
+
         if self.move_selection == "ucb":
             C = 0.4  # sqrt(2) is safe, this is more aggressive
             best = runUcb(self, cboard, C, moves, color)
