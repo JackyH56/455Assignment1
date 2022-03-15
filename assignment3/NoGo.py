@@ -82,10 +82,15 @@ class Go3:
                 distribution = PatternUtil.generate_pattern_moves(board, color)
                 move = PatternUtil.random_select_move(distribution)
             board.play_move(move, color)
+            
             if move == PASS:
                 winner = GoBoardUtil.opponent(color)
                 break
         return winner
+    
+    def getDistribution(self, board, color):
+        distribution = PatternUtil.generate_pattern_moves(board, color)
+        return distribution
 
 def run(move_select, sim_rule):
     """
@@ -127,7 +132,6 @@ def parse_args():
         sys.exit(0)
 
     return move_select, sim_rule
-
 
 if __name__ == "__main__":
     move_select, sim_rule = parse_args()

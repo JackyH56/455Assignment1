@@ -345,7 +345,12 @@ class GtpConnection:
             point_strs = ' '.join(point_strs)
             self.respond(point_strs)
         else:
-            self.respond("pattern")
+            distribution = self.go_engine.getDistribution(self.board, self.board.current_player)
+            coord = point_to_coord(distribution[0][0], self.board.size)
+            move = format_point(coord)
+
+            probability = distribution[0][2]
+            self.respond(move + " " + str(probability))
 
 def point_to_coord(point, boardsize):
     """
