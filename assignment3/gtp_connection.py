@@ -8,6 +8,7 @@ at the University of Edinburgh.
 """
 import traceback
 from sys import stdin, stdout, stderr
+from urllib import response
 from board_util import (
     GoBoardUtil,
     BLACK,
@@ -334,7 +335,13 @@ class GtpConnection:
         point_strs  = [ chr(ord('a') + col - 1) + str(row) for row, col in coords]
         point_strs.sort()
         num_moves = len(point_strs)
-
+        if len(num_moves) == 0:
+            self.respond("Pass")
+        else:
+            response = (
+                legal_moves + " " + coords
+            )
+            self.respond(response)
 
         # get probabilities
         probabilities = ""
