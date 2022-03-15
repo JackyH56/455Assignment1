@@ -337,7 +337,6 @@ class GtpConnection:
         num_moves = len(point_strs)
 
         # get probabilities
-        probabilities = ""
         if self.go_engine.sim_policy == "random":
             prob = str(round(1 / num_moves, 3))
             for i in range(num_moves):
@@ -345,12 +344,21 @@ class GtpConnection:
             point_strs = ' '.join(point_strs)
             self.respond(point_strs)
         else:
+            response = dict()
             distribution = self.go_engine.getDistribution(self.board, self.board.current_player)
-            coord = point_to_coord(distribution[0][0], self.board.size)
-            move = format_point(coord)
+            for i in range(0, len(distribution)):
+                coord = point_to_coord(distribution[i][0], self.board.size)
+                probability = distribution[i][2]
+                move = format_point(coord)
+                response[move] = probability
+            sortedResponse = dict( sorted(response.items(), key=lambda x: x[0].lower()) )
 
-            probability = distribution[0][2]
-            self.respond(move + " " + str(probability))
+            policy_moves = ""
+            for move in sortedResponse:
+                policy_moves = policy_moves.lower() + move.lower() + " "
+            for probability in sortedResponse.values():
+                policy_moves = policy_moves + str(round(probability, 3)) + " "
+            self.respond(policy_moves)
 
 def point_to_coord(point, boardsize):
     """
