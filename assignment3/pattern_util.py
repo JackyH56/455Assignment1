@@ -1,7 +1,5 @@
 import csv
 from board_util import GoBoardUtil, PASS
-from board_util import coord_to_point
-from gtp_connection import move_to_coord
 import random
 
 weights = []
@@ -17,15 +15,20 @@ class PatternUtil(object):
         # distribution_item[1] - the board code
         # distribution_item[2] - the probability
         legal_moves = GoBoardUtil.generate_legal_moves(board, color)
+        legal_moves.sort()
+        print(legal_moves)
         distribution = []
         sum = 0.0
         for point in legal_moves:
             code = PatternUtil.get_pattern_code(point, board)
-            if weights[code] and weights[code][1] != 1.0:
+            if weights[code]:
                 distribution.append([point, code, weights[code][1]])
                 sum += weights[code][1]
         
         # adjust probabilities so they add up to 1, a proper distribution
+        if sum == 0:
+            return distribution
+
         for pattern in distribution:
             pattern[2] = pattern[2] / sum
 
@@ -50,17 +53,17 @@ class PatternUtil(object):
     @staticmethod
     def get_pattern_code(point, board):
         adjacent = [
-            point - board.NS - 1,
-            point - board.NS,
-            point - board.NS + 1,
-            point - 1,
-            point + 1,
             point + board.NS - 1,
             point + board.NS,
-            point + board.NS + 1]
+            point + board.NS + 1,
+            point - 1,
+            point + 1,
+            point - board.NS - 1,
+            point - board.NS,
+            point - board.NS + 1]
         
         code = 0
         for i in range(8):
-            code += board.get_color(adjacent[i]) * 4 ^ i
+            code += board.get_color(adjacent[i]) * (4 ** i)
 
         return code
