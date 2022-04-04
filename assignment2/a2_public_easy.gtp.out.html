@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>Output: a2_public_easy.gtp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=Cp1252">
+<meta name="generator" content="gogui-regress 1.5.1 (http://gogui.sf.net)">
+<style type="text/css">
+<!--
+body { margin:0; }
+span.comment { color:#999999; }
+span.fail { font-weight:bold; color:#ff5454; }
+span.error { font-weight:bold; color:#ffa954; }
+span.stderr { color:#666666; }
+span.invalid { background:#ff5454;}
+span.pass { font-weight:bold; color:#5eaf5e; }
+span.test { font-weight:bold; }
+-->
+</style>
+</head>
+<body bgcolor="white" text="black" link="#0000ee" vlink="#551a8b">
+<table border="0" width="100%" bgcolor="#91aee8" border="0">
+<tr><td>
+<h1>Output: a2_public_easy.gtp</h1>
+</td></tr>
+</table>
+<table width="100%" bgcolor="#e0e0e0">
+<tr><th align="left">Date:</th><td>February 14, 2022 at 10:10:25 AM MST</td></tr>
+<tr><th align="left">Host:</th><td>JXL</td></tr>
+<tr><th align="left" valign="top">Command:</th>
+<td valign="top"><tt>python Go0.py</tt></td></tr>
+</table>
+<pre style="margin:1em">
+name
+= Go0
+
+version
+= 1.0
+
+cputime
+? Unknown command
+
+</pre>
+<hr style="margin:1em" size="1">
+<pre style="margin:1em">
+<span class="command">boardsize 4
+</span>= 
+
+<span class="command">clear_board
+</span>= 
+
+<span class="command">timelimit 10
+</span>= 
+
+<span class="command">play b a4
+</span>= 
+
+<span class="command">play w a2
+</span>= 
+
+<span class="command">play b b1
+</span>= 
+
+<span class="command">play w b3
+</span>= 
+
+<span class="command">play b c2
+</span>= 
+
+<span class="command">play w d1
+</span>= 
+
+<span class="command">play b d3
+</span>= 
+
+<span class="test"><a name="10">10 solve
+</a></span><span class="stderr">Traceback (most recent call last):
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment2\Go0.py", line 42, in &lt;module&gt;
+    run()
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment2\Go0.py", line 38, in run
+    con.start_connection()
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment2\gtp_connection.py", line 95, in start_connection
+    self.get_cmd(line)
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment2\gtp_connection.py", line 123, in get_cmd
+    raise e
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment2\gtp_connection.py", line 119, in get_cmd
+    self.commands[command_name](args)
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment2\gtp_connection.py", line 370, in solve_cmd
+    signal.signal(signal.SIGALRM, self.signal_handler)
+AttributeError: module 'signal' has no attribute 'SIGALRM'

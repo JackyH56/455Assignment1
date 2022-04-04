@@ -1,0 +1,15 @@
+boardsize 2
+clear_board
+
+play b b2
+play w a1
+# comment: the command line session has genmove's here, which can return several different correct moves. But we cannot
+# do the remaining tests if we do not know the response here.
+
+10 genmove b
+#? [a2|b1]
+# both moves win for b
+
+20 genmove w
+#? [resign]
+# white has no legal move
