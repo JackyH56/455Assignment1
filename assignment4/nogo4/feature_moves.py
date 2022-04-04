@@ -33,6 +33,13 @@ class FeatureMoves(object):
         return moves, probs
 
     @staticmethod
+    def generate_move(board):
+        moves, probs = FeatureMoves.generate_moves(board)
+        if len(moves) == 0:
+            return None
+        return np.random.choice(board.maxpoint, 1, p=probs)[0]
+
+    @staticmethod
     def generate_move_with_feature_based_probs_max(board):
         """Used for UI"""
         moves, probs = FeatureMoves.generate_moves(board)
@@ -47,12 +54,17 @@ class FeatureMoves(object):
         Run a simulation game according to give parameters.
         """
         limit = kwargs.pop("limit", 1000)
+        simulation_policy = kwargs.pop("random_simulation", "random")
+        use_pattern = kwargs.pop("use_pattern", True)
+
         if kwargs:
             raise TypeError("Unexpected **kwargs: %r" % kwargs)
         winner = board.current_player
         for _ in range(limit):
             color = board.current_player
-            move = FeatureMoves.generate_move(board)
+            assert simulation_policy == "random"
+            # move = FeatureMoves.generate_moves(board)
+            move = GoBoardUtil.generate_random_move(board, color)
             board.play_move(move, color)
             if move == PASS:
                 winner = GoBoardUtil.opponent(color)

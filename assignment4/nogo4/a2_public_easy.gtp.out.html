@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>Output: a2_public_easy.gtp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=Cp1252">
+<meta name="generator" content="gogui-regress 1.5.1 (http://gogui.sf.net)">
+<style type="text/css">
+<!--
+body { margin:0; }
+span.comment { color:#999999; }
+span.fail { font-weight:bold; color:#ff5454; }
+span.error { font-weight:bold; color:#ffa954; }
+span.stderr { color:#666666; }
+span.invalid { background:#ff5454;}
+span.pass { font-weight:bold; color:#5eaf5e; }
+span.test { font-weight:bold; }
+-->
+</style>
+</head>
+<body bgcolor="white" text="black" link="#0000ee" vlink="#551a8b">
+<table border="0" width="100%" bgcolor="#91aee8" border="0">
+<tr><td>
+<h1>Output: a2_public_easy.gtp</h1>
+</td></tr>
+</table>
+<table width="100%" bgcolor="#e0e0e0">
+<tr><th align="left">Date:</th><td>April 4, 2022 5:45:50 PM MDT</td></tr>
+<tr><th align="left">Host:</th><td>JXL</td></tr>
+<tr><th align="left" valign="top">Command:</th>
+<td valign="top"><tt>python nogo4.py</tt></td></tr>
+</table>
+<pre style="margin:1em">
+name
+= NoGo4
+
+version
+= 1.0
+
+cputime
+? Unknown command
+
+</pre>
+<hr style="margin:1em" size="1">
+<pre style="margin:1em">
+<span class="command">boardsize 4
+</span>= 
+
+<span class="command">clear_board
+</span>= 
+
+<span class="command">genmove b
+</span><span class="stderr">Load Features_weight from features_weight.dat ...Traceback (most recent call last):
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\nogo4.py", line 90, in &lt;module&gt;
+</span><span class="invalid">Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+</span><span class="stderr">    run()
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\nogo4.py", line 87, in run
+</span><span class="invalid">Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+Invalid response: color2
+Invalid response: current2
+</span><span class="stderr">    con.start_connection()
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\gtp_connection.py", line 82, in start_connection
+    self.get_cmd(line)
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\gtp_connection.py", line 111, in get_cmd
+    raise e
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\gtp_connection.py", line 107, in get_cmd
+    self.commands[command_name](args)
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\gtp_connection.py", line 330, in genmove_cmd
+    move = self.go_engine.get_move(self.board, color)
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\nogo4.py", line 58, in get_move
+    move = self.MCTS.get_move(
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\mcts.py", line 198, in get_move
+    self._playout(board_copy, toplay)
+  File "C:\Users\Jacky\UofAStuff\Winter2022\CMPUT455\455Assignments\assignment4\nogo4\mcts.py", line 150, in _playout
+    assert board.current_player == color
+AssertionError
+</span><span class="invalid">Invalid response: color2
+Invalid response: current1
+Invalid response: color2

@@ -39,7 +39,7 @@ class NoGo:
         self.num_simulation = 300
         self.limit = 100
         self.exploration = 0.4
-        self.simulation_policy = "probabilistic"
+        self.simulation_policy = "random"
         self.use_pattern = True
         self.in_tree_knowledge = None
         self.parent = None

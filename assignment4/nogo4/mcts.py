@@ -53,7 +53,7 @@ class TreeNode(object):
         moves = board.get_empty_points()
         for move in moves:
             if move not in self._children:
-                if board.is_legal(move, color) and not board.is_eye(move, color):
+                if board.is_legal(move, color):
                     self._children[move] = TreeNode(self)
                     self._children[move]._move = move
         self._children[PASS] = TreeNode(self)
@@ -145,7 +145,8 @@ class MCTS(object):
         assert node.is_leaf()
         if not node._expanded:
             node.expand(board, color)
-
+        print("current" + str(board.current_player))
+        print("color" + str(color))
         assert board.current_player == color
         leaf_value = self._evaluate_rollout(board, color)
         # Update value and visit count of nodes in this traversal.
