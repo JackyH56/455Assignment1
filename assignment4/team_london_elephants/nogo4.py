@@ -36,7 +36,7 @@ class NoGo:
         self.name = "NoGo4"
         self.version = 1.0
         self.MCTS = MCTS()
-        self.num_simulation = 300
+        self.num_simulation = 2000
         self.limit = 100
         self.exploration = 0.4
         self.simulation_policy = "random"

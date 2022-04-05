@@ -1,0 +1,4 @@
+boardsize 7
+clear_board
+genmove b
+genmove w

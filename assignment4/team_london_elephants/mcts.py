@@ -138,15 +138,15 @@ class MCTS(object):
             if move != PASS:
                 assert board.is_legal(move, color)
             if move == PASS:
-                move = None
+                leaf_value = self._evaluate_rollout(board, color)
+                node.update_recursive(leaf_value)
+                return
             board.play_move(move, color)
             color = GoBoardUtil.opponent(color)
             node = next_node
         assert node.is_leaf()
         if not node._expanded:
             node.expand(board, color)
-        print("current" + str(board.current_player))
-        print("color" + str(color))
         assert board.current_player == color
         leaf_value = self._evaluate_rollout(board, color)
         # Update value and visit count of nodes in this traversal.
