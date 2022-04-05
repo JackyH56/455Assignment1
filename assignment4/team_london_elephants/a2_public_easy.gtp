@@ -1,4 +1,12 @@
-boardsize 7
+boardsize 3
 clear_board
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
+genmove b
+genmove w
 genmove b
 genmove w

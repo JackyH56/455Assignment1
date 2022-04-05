@@ -45,6 +45,7 @@ class TreeNode(object):
         self._black_wins = 0
         self._expanded = False
         self._move = None
+        self._best_move = None
 
     def expand(self, board, color):
         """
@@ -56,8 +57,8 @@ class TreeNode(object):
                 if board.is_legal(move, color):
                     self._children[move] = TreeNode(self)
                     self._children[move]._move = move
-        self._children[PASS] = TreeNode(self)
-        self._children[PASS]._move = PASS
+        # self._children[PASS] = TreeNode(self)
+        # self._children[PASS]._move = PASS
         self._expanded = True
 
     def select(self, exploration, max_flag):
@@ -112,6 +113,7 @@ class MCTS(object):
     def __init__(self):
         self._root = TreeNode(None)
         self.toplay = BLACK
+        self._best_move = None
 
     def _playout(self, board, color):
         """
@@ -138,9 +140,7 @@ class MCTS(object):
             if move != PASS:
                 assert board.is_legal(move, color)
             if move == PASS:
-                leaf_value = self._evaluate_rollout(board, color)
-                node.update_recursive(leaf_value)
-                return
+                move = None         
             board.play_move(move, color)
             color = GoBoardUtil.opponent(color)
             node = next_node
@@ -196,20 +196,24 @@ class MCTS(object):
         for n in range(num_simulation):
             board_copy = board.copy()
             self._playout(board_copy, toplay)
-        # choose a move that has the most visit
-        moves_ls = [
-            (move, node._n_visits) for move, node in self._root._children.items()
-        ]
-        if not moves_ls:
-            return None
-        moves_ls = sorted(moves_ls, key=lambda i: i[1], reverse=True)
-        move = moves_ls[0]
-        self.print_stat(board, self._root, toplay)
-        # self.good_print(board,self._root,self.toplay,10)
-        if move[0] == PASS:
-            return None
-        assert board.is_legal(move[0], toplay)
-        return move[0]
+
+            # choose a move that has the most visit
+            moves_ls = [
+                (move, node._n_visits) for move, node in self._root._children.items()
+            ]
+            if not moves_ls:
+                self.best_move = None
+            moves_ls = sorted(moves_ls, key=lambda i: i[1], reverse=True)
+            move = moves_ls[0]
+            self.print_stat(board, self._root, toplay)
+            # self.good_print(board,self._root,self.toplay,10)
+            if move[0] == PASS:
+                self._best_move = None
+            assert board.is_legal(move[0], toplay)
+        return self._best_move
+    
+    def get_best_move(self):
+        return self._best_move
 
     def update_with_move(self, last_move):
         """

@@ -36,13 +36,14 @@ class NoGo:
         self.name = "NoGo4"
         self.version = 1.0
         self.MCTS = MCTS()
-        self.num_simulation = 2000
+        self.num_simulation = 10000
         self.limit = 100
         self.exploration = 0.4
         self.simulation_policy = "random"
         self.use_pattern = True
         self.in_tree_knowledge = None
         self.parent = None
+        self.best_move = None
 
     def reset(self):
         self.MCTS = MCTS()
@@ -67,6 +68,9 @@ class NoGo:
         )
         self.update(move)
         return move
+
+    def get_best_move(self):
+        return self.MCTS.get_best_move()
 
     def get_node_depth(self, root):
         MAX_DEPTH = 100
